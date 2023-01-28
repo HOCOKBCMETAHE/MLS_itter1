@@ -8,7 +8,14 @@ class FSM_Admin_AddConferenceRoom(StatesGroup):
     description = State()
     price = State()
 
+
 class FSM_Admin_addDecision(StatesGroup):
     question = State()
     decision = State()
-    cehcksave = State()
+    checksave = State()
+
+
+class FSM_Admin_addArticle(StatesGroup):
+    photo = State()
+    article = State()
+    checksave = State()

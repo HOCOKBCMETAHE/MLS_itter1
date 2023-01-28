@@ -5,7 +5,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 # keyboard for admin main menu
 
-def ADD_ROOM_CLOSE():
+def ADD_CLOSE():
     buttons= [
         [
             types.KeyboardButton(

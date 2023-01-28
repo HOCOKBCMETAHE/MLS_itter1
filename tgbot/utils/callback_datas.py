@@ -5,7 +5,7 @@ from aiogram.dispatcher.filters import Text
 from aiogram.utils.callback_data import CallbackData
 
 from ..misc.states import FSM_Admin_addDecision
-from ..keyboards.admin_inline import ADD_DECISION, ADMIN_PANEL
+from ..keyboards.admin_inline import ADD_EXIT, ADMIN_PANEL
 
 
 

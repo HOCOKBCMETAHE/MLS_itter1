@@ -27,15 +27,17 @@ async def open_adminpanel(callback: CallbackQuery):
         await callback.answer()
 
 async def canceling_states(callback: CallbackQuery, state: FSMContext):
-    current_state = await state.get_state()
-    if current_state is None:
-        await callback.message.edit_text('[SYSTEM]: No FSM process\n[STATUS]: OK', reply_markup= ADMIN_PANEL)
+    current_cb_query = callback.data.split(':')[1]
+    if (current_cb_query == "state"):
+        current_state = await state.get_state()
+        if current_state is None:
+            await callback.message.edit_text('[SYSTEM]: No FSM process\n[STATUS]: OK', reply_markup= ADMIN_PANEL)
+            await callback.answer()
+            return
+        await state.finish()
+        await callback.message.reply(f'[STATE]: {current_state}\n[STATUS]: Finished')
+        await callback.message.edit_text(f'Ты вернулся в панель администратра\n{current_state}', reply_markup= ADMIN_PANEL)
         await callback.answer()
-        return
-    await state.finish()
-    await callback.message.reply(f'[STATE]: {current_state}\n[STATUS]: Finished')
-    await callback.message.edit_text(f'Ты вернулся в панель администратра\n{current_state}', reply_markup= ADMIN_PANEL)
-    await callback.answer()
 
 async def canceling_states_reply(message: Message, state: FSMContext):
     current_state = await state.get_state()
@@ -56,3 +58,4 @@ def register_admin(dp: Dispatcher):
     dp.register_message_handler(admin_start, commands=["start"], state="*")
     dp.register_callback_query_handler(admin_main, Text(startswith='startAdm:'), state="*")
     dp.register_callback_query_handler(open_adminpanel, Text(startswith='menuAdm:'), state="*")
+    dp.register_callback_query_handler(canceling_states, Text(startswith="END:"),state="*")
