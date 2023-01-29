@@ -23,11 +23,11 @@ def ADMIN_PANEL():
         [
             types.InlineKeyboardButton(
                 text='Добавить статью',
-                callback_data="addMain:article"
+                callback_data="addArticleStart:start"
             ),
             types.InlineKeyboardButton(
-                text='Добавить вопрос/ответ',
-                callback_data="addMain:decision"
+                text='Добавить вопрос-ответ',
+                callback_data="addDecisionStart:start"
             )
         ],
         [
@@ -154,6 +154,57 @@ def CHANGE_DECISION():
             )
 
         ],
+    ]
+    keyboard = types.InlineKeyboardMarkup(
+        inline_keyboard=buttons
+    )
+    return keyboard
+
+def CHANGE_ARTICLE_MENU(val = 'default'):
+    if val == 'default':
+        buttons = [
+            [
+                types.InlineKeyboardButton(
+                    text='Изменить фотографию',
+                    callback_data="CHANGE_ARTICLE_photo:upd"
+                )
+            ],
+            [
+                types.InlineKeyboardButton(
+                    text='Текст статьи',
+                    callback_data="CHANGE_ARTICLE_article:text"
+                )
+            ]
+        ]
+    else :
+        buttons = [
+        [
+            types.InlineKeyboardButton(
+                text='Добавить фотографию',
+                callback_data="CHANGE_ARTICLE_photo:add"
+            )
+        ],
+        [
+            types.InlineKeyboardButton(
+                text='Текст статьи',
+                callback_data="CHANGE_ARTICLE_article:text"
+            )
+        ]
+    ]
+
+    keyboard = types.InlineKeyboardMarkup(
+        inline_keyboard=buttons
+    )
+    return keyboard
+
+def CHANGE_ARTICLE_EXIT():
+    buttons = [
+        [
+            types.InlineKeyboardButton(
+                text='отменить изменение',
+                callback_data="CHANGE_EXIT:article"
+            )
+        ]
     ]
     keyboard = types.InlineKeyboardMarkup(
         inline_keyboard=buttons

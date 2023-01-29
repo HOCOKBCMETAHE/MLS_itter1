@@ -1,3 +1,5 @@
+import logging
+
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
@@ -12,18 +14,21 @@ from ..keyboards.admin_inline import CHECK_DECISION
 from ..keyboards.admin_inline import CHANGE_DECISION
 
 # adding an expected question and answer to the database
+
+logger = logging.getLogger(__name__)
+
 async def addDecisionStart(callback: types.CallbackQuery, state: FSMContext):
-    current_filter = callback.data.split(":")[1]
-    try:
-        if current_filter == "decision":
-            await callback.message.edit_text('На какой вопрос отвечаем?', reply_markup=ADD_EXIT())
-            await callback.answer()
-            await FSM_Admin_addDecision.question.set()
-    except:
-        print("addDecision")
+        current_filter = callback.data.split(":")[1]
+        try:
+            if current_filter == "start":
+                await callback.message.edit_text("На какой вопрос отвечаем?", reply_markup=ADD_EXIT())
+                await callback.answer()
+                await FSM_Admin_addDecision.question.set()
+        except:
+            logger.info("[ERROR]: addDecisionStart")
 
 
-async def loadQuestion(message: Message, state: FSMContext):
+async def addQuestion(message: Message, state: FSMContext):
     async with state.proxy() as data:
         data['question'] = message.text
     await FSM_Admin_addDecision.next()
@@ -33,7 +38,6 @@ async def loadQuestion(message: Message, state: FSMContext):
 async def addDecision(message: Message, state: FSMContext):
     async with state.proxy() as data:
         data['decision'] = message.text
-
     async with state.proxy() as data:
         await message.answer("Теперь давай проверим, все ли верно", reply_markup=ReplyKeyboardRemove())
         await message.answer(f"Ожидаемый вопрос: \n{data['question']}\n\nОтвет: \n{data['decision']}",
@@ -42,7 +46,6 @@ async def addDecision(message: Message, state: FSMContext):
 
 async def CallbackSaveDecision(callback: types.CallbackQuery, state: FSMContext):
     current_TypesQuery = callback.data.split(":")[1]
-
     if current_TypesQuery == "decision":
         await state.finish()
         await callback.message.delete()
@@ -51,7 +54,7 @@ async def CallbackSaveDecision(callback: types.CallbackQuery, state: FSMContext)
     await callback.answer()
 
 
-async def CallbackChangeRoom(callback: types.CallbackQuery, state: FSMContext):
+async def CallbackChangeDecision(callback: types.CallbackQuery, state: FSMContext):
     current_TypesQuery = callback.data.split(":")[1]
     if current_TypesQuery == "decision":
         await callback.message.delete()
@@ -62,12 +65,12 @@ async def CallbackChangeRoom(callback: types.CallbackQuery, state: FSMContext):
 
 def register_addDecision(dp: Dispatcher):
     dp.register_callback_query_handler(addDecisionStart, Text(
-        startswith="addMain:"), state=None, is_admin=True)
+        startswith="addDecisionStart:"), state=None, is_admin=True)
     dp.register_message_handler(
-        loadQuestion, state=FSM_Admin_addDecision.question)
+        addQuestion, state=FSM_Admin_addDecision.question)
     dp.register_message_handler(
         addDecision, state=FSM_Admin_addDecision.decision)
     dp.register_callback_query_handler(CallbackSaveDecision, Text(startswith="save:"),
                                        state=FSM_Admin_addDecision.decision)
-    dp.register_callback_query_handler(CallbackChangeRoom, Text(startswith="addMain:"),
+    dp.register_callback_query_handler(CallbackChangeDecision, Text(startswith="addMain3:"),
                                        state=FSM_Admin_addDecision.decision)
